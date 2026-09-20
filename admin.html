@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Dharmshala Mobiles</title>
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f4f6f8;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e4e8;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 20px;
+        }
+        .btn-logout {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .card {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e1e4e8;
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        /* Photo Picker & Previews */
+        .photo-picker-box {
+            border: 2px dashed #0066cc;
+            padding: 16px;
+            border-radius: 6px;
+            background: #f0f7ff;
+            text-align: center;
+        }
+        .photo-counter {
+            font-size: 13px;
+            font-weight: 600;
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+        .preview-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background: #fff;
+        }
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(211, 47, 47, 0.9);
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            line-height: 22px;
+            text-align: center;
+        }
+        .btn-primary {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-cancel {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            display: none;
+        }
+        /* Phone Table / List */
+        .phone-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            gap: 12px;
+        }
+        .phone-item:last-child {
+            border-bottom: none;
+        }
+        .phone-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 4px;
+            background: #fafafa;
+            border: 1px solid #eee;
+        }
+        .phone-details {
+            flex-grow: 1;
+        }
+        .phone-details h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+        .phone-details p {
+            font-size: 13px;
+            color: #666;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-available { background: #e8f5e9; color: #2e7d32; }
+        .status-sold { background: #ffebee; color: #c62828; }
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-edit { background: #ff9800; color: white; }
+        .btn-delete { background: #f44336; color: white; }
+        .btn-status { background: #4caf50; color: white; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .phone-item { flex-direction: column; align-items: flex-start; }
+            .action-btns { width: 100%; justify-content: flex-end; margin-top: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>Dharmshala Mobiles Admin</h1>
+        <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card">
+        <h2 id="formTitle">Add New Phone</h2>
+        <form id="phoneForm">
+            <input type="hidden" id="phoneId">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Phone Name / Model *</label>
+                    <input type="text" id="name" placeholder="e.g. iPhone 13" required>
+                </div>
+                <div class="form-group">
+                    <label>Price (₹) *</label>
+                    <input type="number" id="price" placeholder="e.g. 35000" required>
+                </div>
+                <div class="form-group">
+                    <label>Condition *</label>
+                    <select id="condition" required>
+                        <option value="Like New">Like New</option>
+                        <option value="Excellent">Excellent</option>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Storage *</label>
+                    <input type="text" id="storage" placeholder="e.g. 128 GB" required>
+                </div>
+                <div class="form-group">
+                    <label>RAM</label>
+                    <input type="text" id="ram" placeholder="e.g. 6 GB">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="available">
+                        <option value="true">Available</option>
+                        <option value="false">Sold</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Description</label>
+                    <textarea id="description" rows="3" placeholder="Enter details like battery health, warranty, scratch status..."></textarea>
+                </div>
+                <div class="form-group full-width">
+                    <label>Phone Photos (Select up to 4 photos one by one)</label>
+                    <div class="photo-picker-box">
+                        <div class="photo-counter" id="photoCounter">0 / 4 photos selected</div>
+                        <input type="file" id="imageInput" accept="image/*" multiple style="display: none;" onchange="handleFileSelect(event)">
+                        <button type="button" class="btn-sm" style="background:#0066cc; color:white;" onclick="document.getElementById('imageInput').click()">+ Choose Photos</button>
+                        <div class="preview-grid" id="previewGrid"></div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" id="saveBtn" class="btn-primary">Add Phone</button>
+            <button type="button" id="cancelBtn" class="btn-cancel" onclick="resetForm()">Cancel Editing</button>
+        </form>
+    </div>
+
+    <!-- Phone List Card -->
+    <div class="card">
+        <h2>All Mobile Listings</h2>
+        <div id="phoneList">Loading phones...</div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://hfrqbfwtvallsnamcnsm.supabase.co";
+    // PASTE YOUR ANON KEY BELOW:
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmcnFiZnd0dmFsbHNuYW1jbnNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwNjM5NzYsImV4cCI6MjEwMzYzOTk3Nn0.Q_HwMPGtReV1R1lxUgDx7qu52EYRzK853Q5Ua4F8ONQ";
+
+    const token = localStorage.getItem('supabase_access_token');
+    if (!token) {
+        window.location.href = "login.html";
+    }
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        global: { headers: { Authorization: `Bearer ${token}` } }
+    });
+
+    let selectedFiles = []; // Keeps track of new files chosen
+    let existingImageUrls = []; // Holds existing URLs when editing
+
+    // Check Authentication & Load Phones
+    async function init() {
+        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        if (error || !user || user.email !== "rroy37064@gmail.com") {
+            localStorage.removeItem('supabase_access_token');
+            window.location.href = "login.html";
+            return;
+        }
+        loadPhones();
+    }
+
+    // Photo selection logic (adds photos without replacing previous ones)
+    function handleFileSelect(event) {
+        const files = Array.from(event.target.files);
+        
+        for (let file of files) {
+            if (selectedFiles.length + existingImageUrls.length < 4) {
+                selectedFiles.push(file);
+            } else {
+                alert("Maximum 4 photos allowed per phone.");
+                break;
+            }
+        }
+        event.target.value = ""; // Reset file input so same file can be selected again
+        updatePhotoPreviews();
+    }
+
+    function removeFile(index, isExisting = false) {
+        if (isExisting) {
+            existingImageUrls.splice(index, 1);
+        } else {
+            selectedFiles.splice(index, 1);
+        }
+        updatePhotoPreviews();
+    }
+
+    function updatePhotoPreviews() {
+        const grid = document.getElementById('previewGrid');
+        grid.innerHTML = "";
+        
+        const total = existingImageUrls.length + selectedFiles.length;
+        document.getElementById('photoCounter').textContent = `${total} / 4 photos selected`;
+
+        // Render Existing Photos (if editing)
+        existingImageUrls.forEach((url, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            div.innerHTML = `
+                <img src="${url}" alt="photo">
+                <button type="button" class="remove-btn" onclick="removeFile(${idx}, true)">×</button>
+            `;
+            grid.appendChild(div);
+        });
+
+        // Render New Selected Photos
+        selectedFiles.forEach((file, idx) => {
+            const div = document.createElement('div');
+            div.className = 'preview-item';
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'remove-btn';
+            btn.innerHTML = '×';
+            btn.onclick = () => removeFile(idx, false);
+            div.appendChild(img);
+            div.appendChild(btn);
+            grid.appendChild(div);
+        });
+    }
+
+    // Load All Phones
+    async function loadPhones() {
+        const container = document.getElementById('phoneList');
+        const { data, error } = await supabaseClient
+            .from('Phones')
+            .select('*')
+            .order('id', { ascending: false });
+
+        if (error) {
+            container.innerHTML = `<p style="color:red;">Error loading phones: ${error.message}</p>`;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            container.innerHTML = "<p>No phones listed yet.</p>";
+            return;
+        }
+
+        container.innerHTML = data.map(phone => {
+            const mainImg = phone.image_url || (phone.image_urls && phone.image_urls[0]) || 'https://via.placeholder.com/60?text=No+Image';
+            return `
+                <div class="phone-item">
+                    <img src="${mainImg}" class="phone-thumb" alt="${phone.name}">
+                    <div class="phone-details">
+                        <h4>${phone.name} - ₹${phone.price}</h4>
+                        <p>${phone.storage || ''} ${phone.ram ? '| RAM: ' + phone.ram : ''} | Condition: ${phone.condition || ''}</p>
+                        <span class="status-badge ${phone.available ? 'status-available' : 'status-sold'}">
+                            ${phone.available ? 'Available' : 'Sold'}
+                        </span>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-sm btn-status" onclick="toggleStatus(${phone.id}, ${phone.available})">
+                            Mark ${phone.available ? 'Sold' : 'Available'}
+                        </button>
+                        <button class="btn-sm btn-edit" onclick="editPhone(${JSON.stringify(phone).replace(/"/g, '&quot;')})">Edit</button>
+                        <button class="btn-sm btn-delete" onclick="deletePhone(${phone.id})">Delete</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Submit Form (Add / Edit)
+    document.getElementById('phoneForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
+
+        const phoneId = document.getElementById('phoneId').value;
+        const uploadedUrls = [...existingImageUrls];
+
+        // Upload new selected files to Supabase Storage
+        for (let file of selectedFiles) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+            
+            const { data, error } = await supabaseClient.storage
+                .from('phone-images')
+                .upload(fileName, file);
+
+            if (!error) {
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from('phone-images')
+                    .getPublicUrl(fileName);
+                uploadedUrls.push(publicUrlData.publicUrl);
+            }
+        }
+
+        const mainUrl = uploadedUrls.length > 0 ? uploadedUrls[0] : '';
+
+        const payload = {
+            name: document.getElementById('name').value,
+            price: parseFloat(document.getElementById('price').value),
+            condition: document.getElementById('condition').value,
+            storage: document.getElementById('storage').value,
+            ram: document.getElementById('ram').value,
+            description: document.getElementById('description').value,
+            available: document.getElementById('available').value === 'true',
+            image_url: mainUrl,
+            image_urls: uploadedUrls
+        };
+
+        let result;
+        if (phoneId) {
+            result = await supabaseClient.from('Phones').update(payload).eq('id', phoneId);
+        } else {
+            result = await supabaseClient.from('Phones').insert([payload]);
+        }
+
+        if (result.error) {
+            alert("Error saving phone: " + result.error.message);
+        } else {
+            resetForm();
+            loadPhones();
+        }
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Add Phone";
+    });
+
+    function editPhone(phone) {
+        document.getElementById('phoneId').value = phone.id;
+        document.getElementById('name').value = phone.name || '';
+        document.getElementById('price').value = phone.price || '';
+        document.getElementById('condition').value = phone.condition || 'Excellent';
+        document.getElementById('storage').value = phone.storage || '';
+        document.getElementById('ram').value = phone.ram || '';
+        document.getElementById('description').value = phone.description || '';
+        document.getElementById('available').value = phone.available ? 'true' : 'false';
+
+        existingImageUrls = phone.image_urls || (phone.image_url ? [phone.image_url] : []);
+        selectedFiles = [];
+
+        document.getElementById('formTitle').textContent = "Edit Phone Details";
+        document.getElementById('saveBtn').textContent = "Update Phone";
+        document.getElementById('cancelBtn').style.display = 'block';
+
+        updatePhotoPreviews();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    async function toggleStatus(id, currentStatus) {
+        await supabaseClient.from('Phones').update({ available: !currentStatus }).eq('id', id);
+        loadPhones();
+    }
+
+    async function deletePhone(id) {
+        if (confirm("Are you sure you want to delete this phone?")) {
+            await supabaseClient.from('Phones').delete().eq('id', id);
+            loadPhones();
+        }
+    }
+
+    function resetForm() {
+        document.getElementById('phoneForm').reset();
+        document.getElementById('phoneId').value = '';
+        selectedFiles = [];
+        existingImageUrls = [];
+        updatePhotoPreviews();
+        document.getElementById('formTitle').textContent = "Add New Phone";
+        document.getElementById('saveBtn').textContent = "Add Phone";
+        document.getElementById('cancelBtn').style.display = 'none';
+    }
+
+    function logout() {
+        localStorage.removeItem('supabase_access_token');
+        window.location.href = "login.html";
+    }
+
+    init();
+</script>
+
+</body>
+</html>
