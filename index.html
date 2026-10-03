@@ -70,7 +70,7 @@
             flex-wrap: wrap;
         }
         .btn-call {
-            background: #25d366;
+            background: #28a745;
             color: white;
             padding: 10px 20px;
             border-radius: 6px;
@@ -249,7 +249,7 @@
             width: 100%;
         }
 
-        /* Modals: Lightbox & Contact Selection Modal */
+        /* Modals: Lightbox & Contact/Call Selection Modals */
         .modal {
             display: none;
             position: fixed;
@@ -303,6 +303,8 @@
         }
         .opt-1 { background: #25d366; }
         .opt-2 { background: #128c7e; }
+        .opt-call-1 { background: #28a745; }
+        .opt-call-2 { background: #17a2b8; }
         .opt-both { background: #0066cc; }
         
         .close-modal {
@@ -351,7 +353,8 @@
         <p>Verified, best price pre-owned smartphones with transparent condition details.</p>
         <div class="hero-btns">
             <a href="#available-phones" class="btn-view">View Available Phones</a>
-            <button class="btn-call" onclick="openContactModal('Hi, I want to inquire about a phone.')">Contact Us</button>
+            <!-- Call Us Button -->
+            <button class="btn-call" onclick="openCallModal()">Call Us</button>
         </div>
     </section>
 
@@ -380,7 +383,18 @@
         <img class="modal-content" id="fullImage">
     </div>
 
-    <!-- Contact Selection Popup Modal -->
+    <!-- Call Selection Popup Modal -->
+    <div id="callModal" class="modal">
+        <div class="contact-modal-box">
+            <span class="close-modal" onclick="closeCallModal()">&times;</span>
+            <h3>Call Us</h3>
+            <p>Select which contact you want to call:</p>
+            <a href="tel:8091723439" class="contact-opt-btn opt-call-1" onclick="closeCallModal()">Call Contact 1</a>
+            <a href="tel:9317085487" class="contact-opt-btn opt-call-2" onclick="closeCallModal()">Call Contact 2</a>
+        </div>
+    </div>
+
+    <!-- WhatsApp Contact Selection Popup Modal -->
     <div id="contactModal" class="modal">
         <div class="contact-modal-box">
             <span class="close-modal" onclick="closeContactModal()">&times;</span>
@@ -397,7 +411,8 @@
         <h3>Contact Us</h3>
         <p style="margin: 8px 0;">Location: Dharamshala, Himachal Pradesh</p>
         <p style="margin-top: 12px;">
-            <a onclick="openContactModal('Hi, I want to contact Dharamshala Mobiles.')">Click here to Contact Us on WhatsApp</a>
+            <a onclick="openCallModal()">Call Us</a> | 
+            <a onclick="openContactModal('Hi, I want to contact Dharamshala Mobiles.')">WhatsApp Us</a>
         </p>
         <p style="margin-top: 16px;">© Dharmshala Mobiles</p>
     </section>
@@ -412,7 +427,16 @@
     const imageIndices = {};
     let currentMessage = "";
 
-    // Open Contact Modal
+    // Open Call Modal
+    function openCallModal() {
+        document.getElementById('callModal').style.display = 'flex';
+    }
+
+    function closeCallModal() {
+        document.getElementById('callModal').style.display = 'none';
+    }
+
+    // Open WhatsApp Contact Modal
     function openContactModal(messageText) {
         currentMessage = encodeURIComponent(messageText);
         
