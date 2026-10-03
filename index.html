@@ -230,6 +230,13 @@
             margin-bottom: 16px;
             flex-grow: 1;
         }
+        
+        /* WhatsApp Buttons Group */
+        .wa-btn-group {
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
+        }
         .btn-whatsapp {
             background: #25d366;
             color: white;
@@ -238,7 +245,18 @@
             padding: 10px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
+            display: block;
+        }
+        .btn-whatsapp-secondary {
+            background: #128c7e;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
             display: block;
         }
 
@@ -339,7 +357,9 @@
     <section class="footer" id="contact">
         <h3>Contact Us</h3>
         <p style="margin: 8px 0;">Location: Dharamshala, Himachal Pradesh</p>
-        <p>Phone: <a href="tel:8091723439">8091723439</a></p>
+        <p>Phone 1: <a href="tel:8091723439">8091723439</a></p>
+        <!-- DUSRA PHONE NUMBER YAHAN ADD KIYA HAIN -->
+        <p>Phone 2: <a href="tel:9317085487">9317085487</a></p>
         <p style="margin-top: 16px;">© Dharmshala Mobiles</p>
     </section>
 
@@ -410,7 +430,7 @@
             imageIndices[phone.id] = 0;
 
             const waMessage = encodeURIComponent(
-                `Hi Rahul, I saw this phone on Dharmshala Mobiles website:\n\n` +
+                `Hi, I saw this phone on Dharmshala Mobiles website:\n\n` +
                 `*Model:* ${phone.name}\n` +
                 `*Price:* ₹${phone.price}\n` +
                 `*Storage:* ${phone.storage || 'N/A'}\n` +
@@ -418,7 +438,11 @@
                 `Is this phone still available?`
             );
 
-            const waLink = `https://wa.me/918091723439?text=${waMessage}`;
+            // PEHLA WHATSAPP LINK (8091723439)
+            const waLink1 = `https://wa.me/918091723439?text=${waMessage}`;
+
+            // DUSRA WHATSAPP LINK (9317085487)
+            const waLink2 = `https://wa.me/919317085487?text=${waMessage}`;
 
             return `
                 <div class="phone-card">
@@ -441,7 +465,12 @@
                             <span class="badge">${phone.condition || 'Used'}</span>
                         </div>
                         <div class="phone-desc">${phone.description || 'No additional details provided.'}</div>
-                        <a href="${waLink}" target="_blank" class="btn-whatsapp">Enquire on WhatsApp</a>
+                        
+                        <!-- DUSRA WHATSAPP BUTTON YAHAN ADD KIYA HAIN -->
+                        <div class="wa-btn-group">
+                            <a href="${waLink1}" target="_blank" class="btn-whatsapp">WhatsApp (Contact 1)</a>
+                            <a href="${waLink2}" target="_blank" class="btn-whatsapp-secondary">WhatsApp (Contact 2)</a>
+                        </div>
                     </div>
                 </div>
             `;
