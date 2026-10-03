@@ -70,22 +70,15 @@
             flex-wrap: wrap;
         }
         .btn-call {
-            background: #28a745;
+            background: #25d366;
             color: white;
             padding: 10px 20px;
             border-radius: 6px;
             text-decoration: none;
             font-weight: 600;
             font-size: 14px;
-        }
-        .btn-call-secondary {
-            background: #17a2b8;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
+            cursor: pointer;
+            border: none;
         }
         .btn-view {
             background: #0066cc;
@@ -240,12 +233,7 @@
             flex-grow: 1;
         }
         
-        /* WhatsApp Buttons Group */
-        .wa-btn-group {
-            display: flex;
-            gap: 8px;
-            flex-direction: column;
-        }
+        /* WhatsApp Button */
         .btn-whatsapp {
             background: #25d366;
             color: white;
@@ -254,19 +242,11 @@
             padding: 10px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 14px;
             display: block;
-        }
-        .btn-whatsapp-secondary {
-            background: #128c7e;
-            color: white;
-            text-decoration: none;
-            text-align: center;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 13px;
-            display: block;
+            border: none;
+            cursor: pointer;
+            width: 100%;
         }
 
         /* Image Fullscreen Modal / Lightbox */
@@ -313,6 +293,7 @@
             color: #0066cc;
             text-decoration: none;
             font-weight: 600;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -327,14 +308,13 @@
         </div>
     </nav>
 
-    <!-- Hero Section (Dono Call Buttons) -->
+    <!-- Hero Section -->
     <section class="hero">
         <h1>Quality Second-Hand Mobiles in Dharamshala</h1>
         <p>Verified, best price pre-owned smartphones with transparent condition details.</p>
         <div class="hero-btns">
             <a href="#available-phones" class="btn-view">View Available Phones</a>
-            <a href="tel:8091723439" class="btn-call">Call 1 (8091723439)</a>
-            <a href="tel:9317085487" class="btn-call-secondary">Call 2 (9317085487)</a>
+            <button class="btn-call" onclick="sendToBothWhatsApp('Hi, I want to inquire about a phone.')">Contact Us</button>
         </div>
     </section>
 
@@ -367,8 +347,9 @@
     <section class="footer" id="contact">
         <h3>Contact Us</h3>
         <p style="margin: 8px 0;">Location: Dharamshala, Himachal Pradesh</p>
-        <p>Phone 1: <a href="tel:8091723439">8091723439</a></p>
-        <p>Phone 2: <a href="tel:9317085487">9317085487</a></p>
+        <p style="margin-top: 12px;">
+            <a onclick="sendToBothWhatsApp('Hi, I want to contact Dharamshala Mobiles.')">Click here to Contact Us on WhatsApp</a>
+        </p>
         <p style="margin-top: 16px;">© Dharmshala Mobiles</p>
     </section>
 
@@ -380,6 +361,18 @@
 
     let allPhonesList = [];
     const imageIndices = {};
+
+    // Dono numbers ke liye function jo dono links ek saath kholne ki koshish karega
+    function sendToBothWhatsApp(messageText) {
+        const text = encodeURIComponent(messageText);
+        const url1 = `https://wa.me/918091723439?text=${text}`;
+        const url2 = `https://wa.me/919317085487?text=${text}`;
+
+        window.open(url1, '_blank');
+        setTimeout(() => {
+            window.open(url2, '_blank');
+        }, 500);
+    }
 
     async function loadPublicPhones() {
         const container = document.getElementById('phoneContainer');
@@ -438,18 +431,12 @@
 
             imageIndices[phone.id] = 0;
 
-            const waMessage = encodeURIComponent(
-                `Hi, I saw this phone on Dharmshala Mobiles website:\n\n` +
-                `*Model:* ${phone.name}\n` +
-                `*Price:* ₹${phone.price}\n` +
-                `*Storage:* ${phone.storage || 'N/A'}\n` +
-                `*Condition:* ${phone.condition || 'N/A'}\n\n` +
-                `Is this phone still available?`
-            );
-
-            // WhatsApp Links
-            const waLink1 = `https://wa.me/918091723439?text=${waMessage}`;
-            const waLink2 = `https://wa.me/919317085487?text=${waMessage}`;
+            const waMsg = `Hi, I saw this phone on Dharmshala Mobiles website:\n\n` +
+                          `*Model:* ${phone.name}\n` +
+                          `*Price:* ₹${phone.price}\n` +
+                          `*Storage:* ${phone.storage || 'N/A'}\n` +
+                          `*Condition:* ${phone.condition || 'N/A'}\n\n` +
+                          `Is this phone still available?`;
 
             return `
                 <div class="phone-card">
@@ -473,10 +460,7 @@
                         </div>
                         <div class="phone-desc">${phone.description || 'No additional details provided.'}</div>
                         
-                        <div class="wa-btn-group">
-                            <a href="${waLink1}" target="_blank" class="btn-whatsapp">WhatsApp (Contact 1)</a>
-                            <a href="${waLink2}" target="_blank" class="btn-whatsapp-secondary">WhatsApp (Contact 2)</a>
-                        </div>
+                        <button class="btn-whatsapp" onclick="sendToBothWhatsApp(\`${waMsg}\`)">Contact Us on WhatsApp</button>
                     </div>
                 </div>
             `;
