@@ -78,6 +78,15 @@
             font-weight: 600;
             font-size: 14px;
         }
+        .btn-call-secondary {
+            background: #17a2b8;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
         .btn-view {
             background: #0066cc;
             color: white;
@@ -318,13 +327,14 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section (Dono Call Buttons) -->
     <section class="hero">
         <h1>Quality Second-Hand Mobiles in Dharamshala</h1>
         <p>Verified, best price pre-owned smartphones with transparent condition details.</p>
         <div class="hero-btns">
             <a href="#available-phones" class="btn-view">View Available Phones</a>
-            <a href="tel:8091723439" class="btn-call">Call Us (8091723439)</a>
+            <a href="tel:8091723439" class="btn-call">Call 1 (8091723439)</a>
+            <a href="tel:9317085487" class="btn-call-secondary">Call 2 (9317085487)</a>
         </div>
     </section>
 
@@ -358,7 +368,6 @@
         <h3>Contact Us</h3>
         <p style="margin: 8px 0;">Location: Dharamshala, Himachal Pradesh</p>
         <p>Phone 1: <a href="tel:8091723439">8091723439</a></p>
-        <!-- DUSRA PHONE NUMBER YAHAN ADD KIYA HAIN -->
         <p>Phone 2: <a href="tel:9317085487">9317085487</a></p>
         <p style="margin-top: 16px;">© Dharmshala Mobiles</p>
     </section>
@@ -438,10 +447,8 @@
                 `Is this phone still available?`
             );
 
-            // PEHLA WHATSAPP LINK (8091723439)
+            // WhatsApp Links
             const waLink1 = `https://wa.me/918091723439?text=${waMessage}`;
-
-            // DUSRA WHATSAPP LINK (9317085487)
             const waLink2 = `https://wa.me/919317085487?text=${waMessage}`;
 
             return `
@@ -466,7 +473,6 @@
                         </div>
                         <div class="phone-desc">${phone.description || 'No additional details provided.'}</div>
                         
-                        <!-- DUSRA WHATSAPP BUTTON YAHAN ADD KIYA HAIN -->
                         <div class="wa-btn-group">
                             <a href="${waLink1}" target="_blank" class="btn-whatsapp">WhatsApp (Contact 1)</a>
                             <a href="${waLink2}" target="_blank" class="btn-whatsapp-secondary">WhatsApp (Contact 2)</a>
