@@ -249,7 +249,7 @@
             width: 100%;
         }
 
-        /* Image Fullscreen Modal / Lightbox */
+        /* Modals: Lightbox & Contact Selection Modal */
         .modal {
             display: none;
             position: fixed;
@@ -258,7 +258,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+            background-color: rgba(0, 0, 0, 0.7);
             align-items: center;
             justify-content: center;
         }
@@ -268,12 +268,49 @@
             object-fit: contain;
             border-radius: 4px;
         }
+        .contact-modal-box {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .contact-modal-box h3 {
+            margin-bottom: 12px;
+            font-size: 18px;
+            color: #111;
+        }
+        .contact-modal-box p {
+            font-size: 13px;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+        .contact-opt-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        .opt-1 { background: #25d366; }
+        .opt-2 { background: #128c7e; }
+        .opt-both { background: #0066cc; }
+        
         .close-modal {
             position: absolute;
-            top: 15px;
-            right: 25px;
-            color: #fff;
-            font-size: 35px;
+            top: 10px;
+            right: 18px;
+            color: #333;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
             user-select: none;
@@ -314,7 +351,7 @@
         <p>Verified, best price pre-owned smartphones with transparent condition details.</p>
         <div class="hero-btns">
             <a href="#available-phones" class="btn-view">View Available Phones</a>
-            <button class="btn-call" onclick="sendToBothWhatsApp('Hi, I want to inquire about a phone.')">Contact Us</button>
+            <button class="btn-call" onclick="openContactModal('Hi, I want to inquire about a phone.')">Contact Us</button>
         </div>
     </section>
 
@@ -339,8 +376,20 @@
 
     <!-- Image Lightbox Modal -->
     <div id="imageModal" class="modal" onclick="closeImageModal()">
-        <span class="close-modal">&times;</span>
+        <span class="close-modal" style="color:white; top:15px; right:25px; font-size:35px;">&times;</span>
         <img class="modal-content" id="fullImage">
+    </div>
+
+    <!-- Contact Selection Popup Modal -->
+    <div id="contactModal" class="modal">
+        <div class="contact-modal-box">
+            <span class="close-modal" onclick="closeContactModal()">&times;</span>
+            <h3>Contact Us on WhatsApp</h3>
+            <p>Select which contact you want to send the message to:</p>
+            <a id="btnContact1" href="#" target="_blank" class="contact-opt-btn opt-1" onclick="closeContactModal()">Send to Contact 1</a>
+            <a id="btnContact2" href="#" target="_blank" class="contact-opt-btn opt-2" onclick="closeContactModal()">Send to Contact 2</a>
+            <button class="contact-opt-btn opt-both" onclick="sendToBothDirectly()">Open Both Tabs</button>
+        </div>
     </div>
 
     <!-- Contact Section -->
@@ -348,7 +397,7 @@
         <h3>Contact Us</h3>
         <p style="margin: 8px 0;">Location: Dharamshala, Himachal Pradesh</p>
         <p style="margin-top: 12px;">
-            <a onclick="sendToBothWhatsApp('Hi, I want to contact Dharamshala Mobiles.')">Click here to Contact Us on WhatsApp</a>
+            <a onclick="openContactModal('Hi, I want to contact Dharamshala Mobiles.')">Click here to Contact Us on WhatsApp</a>
         </p>
         <p style="margin-top: 16px;">© Dharmshala Mobiles</p>
     </section>
@@ -361,17 +410,26 @@
 
     let allPhonesList = [];
     const imageIndices = {};
+    let currentMessage = "";
 
-    // Dono numbers ke liye function jo dono links ek saath kholne ki koshish karega
-    function sendToBothWhatsApp(messageText) {
-        const text = encodeURIComponent(messageText);
-        const url1 = `https://wa.me/918091723439?text=${text}`;
-        const url2 = `https://wa.me/919317085487?text=${text}`;
+    // Open Contact Modal
+    function openContactModal(messageText) {
+        currentMessage = encodeURIComponent(messageText);
+        
+        document.getElementById('btnContact1').href = `https://wa.me/918091723439?text=${currentMessage}`;
+        document.getElementById('btnContact2').href = `https://wa.me/919317085487?text=${currentMessage}`;
+        
+        document.getElementById('contactModal').style.display = 'flex';
+    }
 
-        window.open(url1, '_blank');
-        setTimeout(() => {
-            window.open(url2, '_blank');
-        }, 500);
+    function closeContactModal() {
+        document.getElementById('contactModal').style.display = 'none';
+    }
+
+    function sendToBothDirectly() {
+        window.open(`https://wa.me/918091723439?text=${currentMessage}`, '_blank');
+        window.open(`https://wa.me/919317085487?text=${currentMessage}`, '_blank');
+        closeContactModal();
     }
 
     async function loadPublicPhones() {
@@ -460,7 +518,7 @@
                         </div>
                         <div class="phone-desc">${phone.description || 'No additional details provided.'}</div>
                         
-                        <button class="btn-whatsapp" onclick="sendToBothWhatsApp(\`${waMsg}\`)">Contact Us on WhatsApp</button>
+                        <button class="btn-whatsapp" onclick="openContactModal(\`${waMsg}\`)">Contact Us on WhatsApp</button>
                     </div>
                 </div>
             `;
